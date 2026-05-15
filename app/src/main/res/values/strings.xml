@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Geo Alert</string>
+    <string name="app_subtitle">Proximity-based location alarm</string>
+    <string name="destination">DESTINATION COORDINATES</string>
+    <string name="label_latitude">Latitude</string>
+    <string name="label_longitude">Longitude</string>
+    <string name="hint_latitude">e.g. 28.6139</string>
+    <string name="hint_longitude">e.g. 77.2090</string>
+    <string name="radius_info">Alarm triggers within 3 km radius of destination</string>
+    <string name="btn_start">Start Tracking</string>
+    <string name="btn_stop">Stop Tracking</string>
+    <string name="status_label">CURRENT STATUS</string>
+    <string name="status_idle">Idle — Not Tracking</string>
+    <string name="status_tracking_started">Tracking Started</string>
+    <string name="status_outside_radius">Outside Radius</string>
+    <string name="status_inside_radius">⚠ Inside Radius — ALARM!</string>
+    <string name="footer_note">Background GPS active while tracking.\nBattery optimized with 5s update interval.</string>
+    <string name="alarm_title">Geo Alert — Destination Nearby!</string>
+    <string name="alarm_message">You are within 3 km of your saved destination.</string>
+    <string name="enter_coordinates">Please enter both latitude and longitude</string>
+    <string name="invalid_coordinates">Invalid coordinates. Lat: −90 to 90, Lon: −180 to 180</string>
+    <string name="permission_denied">Location permission is required for tracking</string>
+    <string name="background_permission_info">Background location not granted. Tracking may stop when app is closed.</string>
+    <string name="background_permission_title">Background Location</string>
+    <string name="background_permission_message">For continuous tracking when the app is in background, please select "Allow all the time" on the next screen.</string>
+    <string name="grant">Grant</string>
+    <string name="skip">Skip</string>
+    <string name="gps_disabled_title">GPS Disabled</string>
+    <string name="gps_disabled_message">Location services are disabled. Please enable GPS to use Geo Alert.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
+</resources>
