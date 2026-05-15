@@ -10,135 +10,255 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:padding="16dp">
 
-        <!-- App Icon / Header -->
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:paddingTop="32dp"
-            android:paddingBottom="24dp">
+            android:paddingTop="20dp"
+            android:paddingBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
-                android:textSize="28sp"
+                android:textSize="26sp"
                 android:textStyle="bold"
-                android:textColor="@color/primary"
-                android:letterSpacing="0.05" />
+                android:textColor="@color/primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_subtitle"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textColor="@color/text_secondary"
-                android:paddingTop="4dp" />
+                android:paddingTop="2dp" />
         </LinearLayout>
 
-        <!-- Card: Destination Input -->
+        <!-- Card: Destination -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
             app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/destination"
-                    android:textSize="14sp"
+                    android:text="@string/section_destination"
+                    android:textSize="11sp"
                     android:textStyle="bold"
                     android:textColor="@color/primary"
-                    android:paddingBottom="12dp"
-                    android:letterSpacing="0.08" />
+                    android:letterSpacing="0.1"
+                    android:paddingBottom="10dp" />
 
+                <!-- Latitude -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_latitude"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:paddingBottom="4dp" />
-
+                    android:textColor="@color/text_secondary" />
                 <EditText
                     android:id="@+id/etLatitude"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="48dp"
                     android:hint="@string/hint_latitude"
                     android:inputType="numberDecimal|numberSigned"
                     android:background="@drawable/input_background"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:textSize="15sp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textSize="14sp"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_hint"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="10dp"
                     android:singleLine="true" />
 
+                <!-- Longitude -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_longitude"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:paddingBottom="4dp" />
-
+                    android:textColor="@color/text_secondary" />
                 <EditText
                     android:id="@+id/etLongitude"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="48dp"
                     android:hint="@string/hint_longitude"
                     android:inputType="numberDecimal|numberSigned"
                     android:background="@drawable/input_background"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:textSize="15sp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textSize="14sp"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_hint"
+                    android:layout_marginTop="4dp"
                     android:singleLine="true" />
+
+                <!-- Pick on Map button -->
+                <Button
+                    android:id="@+id/btnPickMap"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/btn_pick_map"
+                    android:textSize="13sp"
+                    android:textColor="@color/primary"
+                    android:backgroundTint="@color/map_btn_bg"
+                    style="@style/Widget.MaterialComponents.Button" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card: Alarm Settings -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="@color/card_background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/radius_info"
+                    android:text="@string/section_alarm"
                     android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:letterSpacing="0.1"
+                    android:paddingBottom="12dp" />
+
+                <!-- Radius -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="4dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_radius"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvRadiusValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3 km"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/sbRadius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="7"
+                    android:progress="3"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Ringtone -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_ringtone"
+                    android:textSize="13sp"
                     android:textColor="@color/text_secondary"
-                    android:paddingTop="10dp" />
+                    android:paddingBottom="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <TextView
+                        android:id="@+id/tvRingtoneName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/ringtone_default"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_primary"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:paddingEnd="8dp" />
+
+                    <Button
+                        android:id="@+id/btnPickRingtone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="@string/btn_change"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/primary"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+                </LinearLayout>
+
+                <!-- Vibration -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_vibration"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:paddingBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerVibration"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/input_background"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Buttons -->
+        <!-- Start / Stop buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp">
 
             <Button
                 android:id="@+id/btnStart"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:text="@string/btn_start"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/primary"
-                android:stateListAnimator="@null"
                 style="@style/Widget.MaterialComponents.Button" />
 
             <Button
@@ -146,62 +266,51 @@
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:text="@string/btn_stop"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/error"
-                android:stateListAnimator="@null"
                 style="@style/Widget.MaterialComponents.Button" />
         </LinearLayout>
 
-        <!-- Status Card -->
+        <!-- Status card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
             app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="16dp"
                 android:gravity="center">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_label"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
                     android:letterSpacing="0.1"
-                    android:paddingBottom="8dp" />
+                    android:textColor="@color/text_secondary"
+                    android:paddingBottom="6dp" />
 
                 <TextView
                     android:id="@+id/tvStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_idle"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/primary"
                     android:gravity="center" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-        <!-- Footer -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/footer_note"
-            android:textSize="11sp"
-            android:textColor="@color/text_secondary"
-            android:gravity="center"
-            android:paddingTop="24dp"
-            android:paddingBottom="16dp" />
 
     </LinearLayout>
 </ScrollView>

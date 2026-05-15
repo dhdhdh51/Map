@@ -12,6 +12,7 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
@@ -34,9 +35,12 @@ class LocationService : Service() {
     private lateinit var locationCallback: LocationCallback
     private var statusCallback: ((String) -> Unit)? = null
 
-    private var destLat: Double = 0.0
-    private var destLon: Double = 0.0
-    private var alarmTriggered = false
+    private var destLat: Double  = 0.0
+    private var destLon: Double  = 0.0
+    private var radiusM: Float   = 3000f
+    private var ringtoneUri: String? = null
+    private var vibPattern: Int  = 1
+    private var alarmTriggered   = false
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
@@ -50,8 +54,7 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
-        createNotificationChannel()
-
+        createNotificationChannels()
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { processLocation(it) }
@@ -60,14 +63,16 @@ class LocationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        destLat = intent?.getDoubleExtra(EXTRA_LAT, 0.0) ?: 0.0
-        destLon = intent?.getDoubleExtra(EXTRA_LON, 0.0) ?: 0.0
+        destLat      = intent?.getDoubleExtra(EXTRA_LAT,       0.0)    ?: 0.0
+        destLon      = intent?.getDoubleExtra(EXTRA_LON,       0.0)    ?: 0.0
+        radiusM      = intent?.getFloatExtra(EXTRA_RADIUS,     3000f)  ?: 3000f
+        ringtoneUri  = intent?.getStringExtra(EXTRA_RINGTONE)
+        vibPattern   = intent?.getIntExtra(EXTRA_VIBRATION,    1)      ?: 1
         alarmTriggered = false
 
         isRunning = true
-        startForeground(NOTIFICATION_ID, buildForegroundNotification())
+        startForeground(NOTIF_ID, buildForegroundNotif())
         startLocationUpdates()
-
         return START_STICKY
     }
 
@@ -78,179 +83,175 @@ class LocationService : Service() {
         stopAlarm()
     }
 
-    fun setStatusCallback(callback: (String) -> Unit) {
-        statusCallback = callback
-    }
+    fun setStatusCallback(cb: (String) -> Unit) { statusCallback = cb }
+
+    // ── GPS updates ──────────────────────────────────────────────────────────
 
     private fun startLocationUpdates() {
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL_MS)
-            .setMinUpdateIntervalMillis(UPDATE_INTERVAL_MS)
+        val req = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, INTERVAL_MS)
+            .setMinUpdateIntervalMillis(INTERVAL_MS)
             .build()
-
         try {
-            fusedClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
-        } catch (e: SecurityException) {
-            stopSelf()
-        }
+            fusedClient.requestLocationUpdates(req, locationCallback, Looper.getMainLooper())
+        } catch (e: SecurityException) { stopSelf() }
     }
 
-    private fun processLocation(location: Location) {
-        val results = FloatArray(1)
-        Location.distanceBetween(location.latitude, location.longitude, destLat, destLon, results)
-        val distanceMeters = results[0]
+    private fun processLocation(loc: Location) {
+        val dist = FloatArray(1)
+        Location.distanceBetween(loc.latitude, loc.longitude, destLat, destLon, dist)
 
-        if (distanceMeters <= RADIUS_METERS) {
-            updateStatus(getString(R.string.status_inside_radius))
-            if (!alarmTriggered) {
-                alarmTriggered = true
-                triggerAlarm()
-            }
+        if (dist[0] <= radiusM) {
+            pushStatus(getString(R.string.status_inside_radius))
+            if (!alarmTriggered) { alarmTriggered = true; triggerAlarm() }
         } else {
-            updateStatus(getString(R.string.status_outside_radius))
-            if (alarmTriggered) {
-                alarmTriggered = false
-                stopAlarm()
-            }
+            val label = if (radiusM < 1000f) "${radiusM.toInt()} m" else "${(radiusM / 1000).toInt()} km"
+            pushStatus("${getString(R.string.status_outside_radius)} ($label)")
+            if (alarmTriggered) { alarmTriggered = false; stopAlarm() }
         }
     }
 
-    private fun updateStatus(status: String) {
-        statusCallback?.invoke(status)
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.notify(NOTIFICATION_ID, buildForegroundNotification(status))
+    private fun pushStatus(s: String) {
+        statusCallback?.invoke(s)
+        nm().notify(NOTIF_ID, buildForegroundNotif(s))
     }
+
+    // ── Alarm ────────────────────────────────────────────────────────────────
 
     private fun triggerAlarm() {
-        val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-
-        mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setLegacyStreamType(AudioManager.STREAM_ALARM)
-                    .build()
-            )
-            setDataSource(applicationContext, alarmUri)
-            isLooping = true
-            prepare()
-            start()
-        }
-
-        startVibration()
+        playRingtone()
+        if (vibPattern > 0) startVibration()
         sendAlarmNotification()
     }
 
-    private fun startVibration() {
-        val pattern = longArrayOf(0, 800, 400, 800, 400)
+    private fun playRingtone() {
+        val uri = ringtoneUri?.let { Uri.parse(it) }
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        runCatching {
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setLegacyStreamType(AudioManager.STREAM_ALARM)
+                        .build()
+                )
+                setDataSource(applicationContext, uri)
+                isLooping = true
+                prepare()
+                start()
+            }
+        }.onFailure {
+            // Fallback to default alarm if custom ringtone is inaccessible
+            runCatching {
+                val defUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                mediaPlayer = MediaPlayer().apply {
+                    setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
+                    setDataSource(applicationContext, defUri)
+                    isLooping = true; prepare(); start()
+                }
+            }
+        }
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibrator = vm.defaultVibrator
+    private fun startVibration() {
+        // Index 0 = None, 1..4 = patterns below
+        val patterns = arrayOf(
+            longArrayOf(0, 400, 300),                                                    // 1 Short
+            longArrayOf(0, 900, 400),                                                    // 2 Long
+            longArrayOf(0, 400, 200, 400, 200, 400, 500),                               // 3 Triple
+            longArrayOf(0, 150,100,150,100,150, 350,                                     // 4 SOS  ...
+                           500,100,500,100,500, 350,
+                           150,100,150,100,150, 800)
+        )
+        val waveform = patterns.getOrElse(vibPattern - 1) { patterns[0] }
+
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         } else {
             @Suppress("DEPRECATION")
-            vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
+            vibrator?.vibrate(VibrationEffect.createWaveform(waveform, 0))
         } else {
             @Suppress("DEPRECATION")
-            vibrator?.vibrate(pattern, 0)
+            vibrator?.vibrate(waveform, 0)
         }
     }
 
     private fun stopAlarm() {
-        mediaPlayer?.apply {
-            if (isPlaying) stop()
-            release()
-        }
+        mediaPlayer?.apply { runCatching { if (isPlaying) stop() }; release() }
         mediaPlayer = null
-        vibrator?.cancel()
-        vibrator = null
+        vibrator?.cancel(); vibrator = null
     }
+
+    // ── Notifications ────────────────────────────────────────────────────────
 
     private fun sendAlarmNotification() {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            this, 1, intent,
+        val pi = PendingIntent.getActivity(
+            this, 1,
+            Intent(this, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        val notification = NotificationCompat.Builder(this, ALERT_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle(getString(R.string.alarm_title))
-            .setContentText(getString(R.string.alarm_message))
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .setVibrate(longArrayOf(0, 800, 400, 800))
-            .build()
-
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.notify(ALARM_NOTIFICATION_ID, notification)
+        nm().notify(ALARM_NOTIF_ID,
+            NotificationCompat.Builder(this, ALERT_CH)
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setContentTitle(getString(R.string.alarm_title))
+                .setContentText(getString(R.string.alarm_message))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setAutoCancel(true)
+                .setContentIntent(pi)
+                .build()
+        )
     }
 
-    private fun buildForegroundNotification(status: String = getString(R.string.status_tracking_started)): Notification {
-        val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
+    private fun buildForegroundNotif(status: String = getString(R.string.status_tracking_started)): Notification {
+        val pi = PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        return NotificationCompat.Builder(this, FOREGROUND_CHANNEL_ID)
+        return NotificationCompat.Builder(this, FG_CH)
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(status)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(pi)
             .build()
     }
 
-    private fun createNotificationChannel() {
+    private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            val foregroundChannel = NotificationChannel(
-                FOREGROUND_CHANNEL_ID,
-                "Geo Alert Tracking",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Shows active GPS tracking status"
-                setShowBadge(false)
-            }
-
-            val alertChannel = NotificationChannel(
-                ALERT_CHANNEL_ID,
-                "Geo Alert Alarm",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Triggered when inside destination radius"
-                enableVibration(true)
-                enableLights(true)
-            }
-
-            nm.createNotificationChannel(foregroundChannel)
-            nm.createNotificationChannel(alertChannel)
+            nm().createNotificationChannel(
+                NotificationChannel(FG_CH, "Geo Alert Tracking", NotificationManager.IMPORTANCE_LOW).apply {
+                    setShowBadge(false)
+                }
+            )
+            nm().createNotificationChannel(
+                NotificationChannel(ALERT_CH, "Geo Alert Alarm", NotificationManager.IMPORTANCE_HIGH).apply {
+                    enableVibration(true); enableLights(true)
+                }
+            )
         }
     }
+
+    private fun nm() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     companion object {
         var isRunning = false
 
-        const val EXTRA_LAT = "extra_lat"
-        const val EXTRA_LON = "extra_lon"
+        const val EXTRA_LAT       = "extra_lat"
+        const val EXTRA_LON       = "extra_lon"
+        const val EXTRA_RADIUS    = "extra_radius"
+        const val EXTRA_RINGTONE  = "extra_ringtone"
+        const val EXTRA_VIBRATION = "extra_vibration"
 
-        private const val FOREGROUND_CHANNEL_ID = "geo_alert_foreground"
-        private const val ALERT_CHANNEL_ID = "geo_alert_alarm"
-        private const val NOTIFICATION_ID = 1001
-        private const val ALARM_NOTIFICATION_ID = 1002
-        private const val UPDATE_INTERVAL_MS = 5000L
-        private const val RADIUS_METERS = 3000f
+        private const val FG_CH        = "geo_alert_fg"
+        private const val ALERT_CH     = "geo_alert_alarm"
+        private const val NOTIF_ID     = 1001
+        private const val ALARM_NOTIF_ID = 1002
+        private const val INTERVAL_MS  = 5000L
     }
 }

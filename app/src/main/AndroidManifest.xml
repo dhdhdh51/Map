@@ -2,27 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geoalert">
 
-    <!-- Location permissions -->
+    <!-- Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
-    <!-- Service & notification permissions -->
+    <!-- Service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Alarm & vibration -->
+    <!-- Alarm / vibration -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- Network state (for FusedLocationProvider fallback) -->
+    <!-- Network (FusedLocation fallback) -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- GPS feature requirement -->
-    <uses-feature
-        android:name="android.hardware.location.gps"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +29,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GeoAlert">
+
+        <!-- Google Maps API key — injected via manifestPlaceholders in build.gradle -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
 
         <activity
             android:name=".MainActivity"
@@ -42,6 +45,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".MapPickerActivity"
+            android:exported="false"
+            android:label="@string/btn_pick_map" />
+
         <service
             android:name=".LocationService"
             android:enabled="true"
@@ -49,5 +57,4 @@
             android:foregroundServiceType="location" />
 
     </application>
-
 </manifest>
