@@ -37,11 +37,6 @@ jobs:
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
-        env:
-          # Add MAPS_API_KEY secret in GitHub repo Settings > Secrets > Actions
-          # Without a key the map screen will show a grey tile with a watermark
-          # but all other features (GPS tracking, alarm, ringtone, radius) will work fine
-          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4

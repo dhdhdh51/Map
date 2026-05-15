@@ -3,24 +3,31 @@
     <string name="app_name">Geo Alert</string>
     <string name="app_subtitle">Proximity-based location alarm</string>
 
+    <!-- Drawer -->
+    <string name="drawer_title">Alarm Settings</string>
+    <string name="drawer_subtitle">Radius, ringtone and vibration</string>
+    <string name="drawer_open">Open alarm settings</string>
+    <string name="drawer_close">Close alarm settings</string>
+    <string name="settings_hint">Open the menu (top-left) to set radius, ringtone and vibration</string>
+
     <!-- Section headers -->
-    <string name="section_destination">DESTINATION COORDINATES</string>
-    <string name="section_alarm">ALARM SETTINGS</string>
+    <string name="section_destination">DESTINATION</string>
+    <string name="tap_map_hint">or pick on map</string>
 
     <!-- Inputs -->
-    <string name="label_latitude">Latitude</string>
-    <string name="label_longitude">Longitude</string>
+    <string name="label_latitude">LATITUDE</string>
+    <string name="label_longitude">LONGITUDE</string>
     <string name="hint_latitude">e.g. 28.6139</string>
     <string name="hint_longitude">e.g. 77.2090</string>
     <string name="label_radius">Alert Radius</string>
-    <string name="label_ringtone">Ringtone</string>
+    <string name="label_ringtone">Alarm Ringtone</string>
     <string name="label_vibration">Vibration Pattern</string>
 
     <!-- Buttons -->
     <string name="btn_start">Start Tracking</string>
     <string name="btn_stop">Stop Tracking</string>
     <string name="btn_pick_map">Pick Location on Map</string>
-    <string name="btn_change">Change</string>
+    <string name="btn_choose_ringtone">Choose Ringtone</string>
     <string name="confirm_location">Confirm This Location</string>
 
     <!-- Status -->
@@ -28,13 +35,16 @@
     <string name="status_idle">Idle - Not Tracking</string>
     <string name="status_tracking_started">Tracking Started</string>
     <string name="status_outside_radius">Outside Radius</string>
-    <string name="status_inside_radius">!! Inside Radius - ALARM TRIGGERED !!</string>
+    <string name="status_inside_radius">ALARM - Inside Radius!</string>
 
     <!-- Map picker -->
-    <string name="tap_to_select">Tap anywhere on the map to set destination</string>
+    <string name="map_picker_title">Select Destination</string>
+    <string name="tap_to_select">Tap anywhere on the map to drop a pin</string>
     <string name="destination">Destination</string>
-    <string name="coords_format">Lat: %.6f    Lon: %.6f</string>
-    <string name="location_selected">Location selected successfully</string>
+    <string name="coords_format">Lat: %.6f   Lon: %.6f</string>
+    <string name="location_selected">Location selected</string>
+    <string name="my_location">My Location</string>
+    <string name="locating">Getting your location...</string>
 
     <!-- Ringtone -->
     <string name="pick_ringtone">Select Alarm Ringtone</string>
@@ -47,9 +57,8 @@
 
     <!-- Errors / dialogs -->
     <string name="enter_coordinates">Please enter both latitude and longitude</string>
-    <string name="invalid_coordinates">Invalid coordinates. Lat: -90 to 90, Lon: -180 to 180</string>
+    <string name="invalid_coordinates">Invalid coordinates. Lat -90 to 90, Lon -180 to 180</string>
     <string name="permission_denied">Location permission is required for tracking</string>
-    <string name="background_permission_info">Background location not granted. App may stop when closed.</string>
     <string name="background_permission_title">Background Location</string>
     <string name="background_permission_message">For tracking when app is in background, please select Allow all the time on the next screen.</string>
     <string name="grant">Grant</string>
@@ -59,7 +68,6 @@
     <string name="open_settings">Open Settings</string>
     <string name="cancel">Cancel</string>
 
-    <!-- Vibration pattern options (also defined as string-array below) -->
     <string-array name="vibration_patterns">
         <item>No Vibration</item>
         <item>Short Pulse</item>

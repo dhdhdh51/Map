@@ -1,16 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- Google Map fills the screen -->
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/mapToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        android:elevation="4dp"
+        app:title="@string/map_picker_title"
+        app:titleTextColor="@color/white"
+        app:navigationIconTint="@color/white" />
+
+    <!-- Map + My-Location FAB -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- My Location FAB -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMyLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/my_location"
+            app:srcCompat="@android:drawable/ic_menu_mylocation"
+            app:backgroundTint="@color/white"
+            app:tint="@color/primary"
+            app:fabSize="normal"
+            android:elevation="6dp" />
+    </FrameLayout>
 
     <!-- Bottom panel -->
     <LinearLayout
@@ -18,8 +48,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/card_background"
-        android:padding="16dp"
-        android:elevation="8dp">
+        android:elevation="8dp"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tvSelectedCoords"
@@ -40,4 +70,5 @@
             android:backgroundTint="@color/primary"
             style="@style/Widget.MaterialComponents.Button" />
     </LinearLayout>
+
 </LinearLayout>

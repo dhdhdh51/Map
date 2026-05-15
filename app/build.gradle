@@ -13,10 +13,6 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
-        // Reads MAPS_API_KEY from environment (GitHub Actions secret) or local.properties
-        def mapsKey = System.getenv("MAPS_API_KEY") ?: ""
-        manifestPlaceholders = [MAPS_API_KEY: mapsKey]
     }
 
     buildTypes {
@@ -44,6 +40,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+
+    // GPS tracking
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+
+    // Map — OpenStreetMap, no API key required
+    implementation 'org.osmdroid:osmdroid-android:6.1.17'
+
+    // SharedPreferences for OSMDroid config (non-deprecated)
+    implementation 'androidx.preference:preference-ktx:1.2.1'
 }
