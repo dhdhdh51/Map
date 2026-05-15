@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStop: Button
     private lateinit var btnPickMap: Button
     private lateinit var tvStatus: TextView
+    private lateinit var tvDistance: TextView
+    private lateinit var tvDistanceLabel: TextView
 
     // Drawer UI
     private lateinit var tvRadiusValue: TextView
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
             locationService = (binder as LocationService.LocalBinder).getService()
             serviceBound = true
-            locationService?.setStatusCallback { s -> runOnUiThread { tvStatus.text = s } }
+            locationService?.setStatusCallback { s -> runOnUiThread { updateStatusUi(s) } }
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             locationService = null; serviceBound = false
@@ -186,6 +188,8 @@ class MainActivity : AppCompatActivity() {
         btnStop          = findViewById(R.id.btnStop)
         btnPickMap       = findViewById(R.id.btnPickMap)
         tvStatus         = findViewById(R.id.tvStatus)
+        tvDistance       = findViewById(R.id.tvDistance)
+        tvDistanceLabel  = findViewById(R.id.tvDistanceLabel)
         tvRadiusValue    = findViewById(R.id.tvRadiusValue)
         sbRadius         = findViewById(R.id.sbRadius)
         spinnerVibration = findViewById(R.id.spinnerVibration)
@@ -366,10 +370,31 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null).show()
     }
 
+    private fun updateStatusUi(raw: String) {
+        // Service sends "Status line\nX.X km away"
+        val parts = raw.split("\n")
+        tvStatus.text = parts[0]
+        if (parts.size > 1) {
+            tvDistance.text = parts[1]
+            tvDistance.visibility = android.view.View.VISIBLE
+            tvDistanceLabel.visibility = android.view.View.VISIBLE
+            // Red when inside radius, blue otherwise
+            val isInside = parts[0].contains("ALARM", ignoreCase = true) ||
+                           parts[0].contains("Inside", ignoreCase = true)
+            tvDistance.setTextColor(
+                ContextCompat.getColor(this, if (isInside) R.color.error else R.color.distance_color)
+            )
+        }
+    }
+
     private fun setTrackingUi(tracking: Boolean) {
         btnStart.isEnabled = !tracking; btnStop.isEnabled = tracking; btnPickMap.isEnabled = !tracking
         btnStart.alpha = if (tracking) 0.5f else 1.0f; btnStop.alpha = if (!tracking) 0.5f else 1.0f
         btnPickMap.alpha = if (tracking) 0.5f else 1.0f
+        if (!tracking) {
+            tvDistance.visibility = android.view.View.GONE
+            tvDistanceLabel.visibility = android.view.View.GONE
+        }
     }
 
     private fun toast(resId: Int) = Toast.makeText(this, getString(resId), Toast.LENGTH_SHORT).show()

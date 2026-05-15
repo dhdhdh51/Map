@@ -210,6 +210,30 @@
                             android:textColor="@color/primary"
                             android:gravity="center" />
 
+                        <!-- Live distance display -->
+                        <TextView
+                            android:id="@+id/tvDistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/distance_color"
+                            android:gravity="center"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="2dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvDistanceLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/distance_to_dest"
+                            android:textSize="11sp"
+                            android:textColor="@color/text_secondary"
+                            android:gravity="center"
+                            android:visibility="gone" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -217,7 +241,7 @@
                             android:textSize="11sp"
                             android:textColor="@color/text_secondary"
                             android:gravity="center"
-                            android:paddingTop="10dp" />
+                            android:paddingTop="12dp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 

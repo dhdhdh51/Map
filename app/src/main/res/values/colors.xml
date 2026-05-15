@@ -13,6 +13,7 @@
     <color name="text_secondary">#5C6878</color>
     <color name="text_hint">#9AAABB</color>
     <color name="map_btn_bg">#E3F0FF</color>
+    <color name="distance_color">#1565C0</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="purple_200">#FFBB86FC</color>

@@ -30,8 +30,9 @@
     <string name="btn_choose_ringtone">Choose Ringtone</string>
     <string name="confirm_location">Confirm This Location</string>
 
-    <!-- Status -->
+    <!-- Status / Distance -->
     <string name="status_label">CURRENT STATUS</string>
+    <string name="distance_to_dest">Distance to destination</string>
     <string name="status_idle">Idle - Not Tracking</string>
     <string name="status_tracking_started">Tracking Started</string>
     <string name="status_outside_radius">Outside Radius</string>

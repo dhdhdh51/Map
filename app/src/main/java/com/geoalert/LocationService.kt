@@ -85,6 +85,11 @@ class LocationService : Service() {
 
     fun setStatusCallback(cb: (String) -> Unit) { statusCallback = cb }
 
+    private fun formatDistance(metres: Float): String = when {
+        metres >= 1000f -> "%.1f km away".format(metres / 1000f)
+        else            -> "${metres.toInt()} m away"
+    }
+
     // ── GPS updates ──────────────────────────────────────────────────────────
 
     private fun startLocationUpdates() {
@@ -97,22 +102,24 @@ class LocationService : Service() {
     }
 
     private fun processLocation(loc: Location) {
-        val dist = FloatArray(1)
-        Location.distanceBetween(loc.latitude, loc.longitude, destLat, destLon, dist)
+        val result = FloatArray(1)
+        Location.distanceBetween(loc.latitude, loc.longitude, destLat, destLon, result)
+        val distM = result[0]
+        val distLabel = formatDistance(distM)
 
-        if (dist[0] <= radiusM) {
-            pushStatus(getString(R.string.status_inside_radius))
+        if (distM <= radiusM) {
+            pushStatus(getString(R.string.status_inside_radius), distLabel)
             if (!alarmTriggered) { alarmTriggered = true; triggerAlarm() }
         } else {
-            val label = if (radiusM < 1000f) "${radiusM.toInt()} m" else "${(radiusM / 1000).toInt()} km"
-            pushStatus("${getString(R.string.status_outside_radius)} ($label)")
+            pushStatus(getString(R.string.status_outside_radius), distLabel)
             if (alarmTriggered) { alarmTriggered = false; stopAlarm() }
         }
     }
 
-    private fun pushStatus(s: String) {
-        statusCallback?.invoke(s)
-        nm().notify(NOTIF_ID, buildForegroundNotif(s))
+    private fun pushStatus(status: String, distance: String = "") {
+        val full = if (distance.isEmpty()) status else "$status\n$distance"
+        statusCallback?.invoke(full)
+        nm().notify(NOTIF_ID, buildForegroundNotif(if (distance.isEmpty()) status else "$status  |  $distance"))
     }
 
     // ── Alarm ────────────────────────────────────────────────────────────────
