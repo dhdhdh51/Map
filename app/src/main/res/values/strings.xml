@@ -14,8 +14,8 @@
     <string name="status_idle">Idle — Not Tracking</string>
     <string name="status_tracking_started">Tracking Started</string>
     <string name="status_outside_radius">Outside Radius</string>
-    <string name="status_inside_radius">⚠ Inside Radius — ALARM!</string>
-    <string name="footer_note">Background GPS active while tracking.\nBattery optimized with 5s update interval.</string>
+    <string name="status_inside_radius">!! Inside Radius - ALARM!</string>
+    <string name="footer_note">Background GPS active while tracking. Battery optimized with 5s update interval.</string>
     <string name="alarm_title">Geo Alert — Destination Nearby!</string>
     <string name="alarm_message">You are within 3 km of your saved destination.</string>
     <string name="enter_coordinates">Please enter both latitude and longitude</string>
