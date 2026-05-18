@@ -1,4 +1,4 @@
-name: Build Geo Alert APK
+name: Build Signed Geo Alert APK
 
 on:
   push:
@@ -8,10 +8,11 @@ on:
 
 jobs:
   build:
-    name: Build Debug APK
+    name: Build Signed Release APK
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -32,17 +33,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > app/keystore.jks
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Signed Release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --stacktrace
 
-      - name: Upload Debug APK
+      - name: Upload Signed Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: GeoAlert-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: GeoAlert-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
           retention-days: 30
 
       - name: Upload Build Reports on failure
