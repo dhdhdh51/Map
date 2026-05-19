@@ -2,7 +2,7 @@ name: Build Geo Alert Release APK
 
 on:
   push:
-    branches: [ "**" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ main, master ]
 
